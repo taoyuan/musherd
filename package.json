@@ -1,0 +1,31 @@
+{
+    "name": "mush",
+    "version": "0.0.1",
+    "description": "Musher server based on node.js and mqtt.",
+    "main": "index.js",
+    "bin": {
+        "mush": "./bin/mush"
+    },
+    "scripts": {
+        "test": "mocha --recursive --bail --reporter spec test",
+        "start": "./bin/mush -i | bunyan"
+    },
+    "repository": {
+        "type": "git",
+        "url": "ssh://git@bitbucket.org/taoyuan/mush.git"
+    },
+    "author": "Tao Yuan",
+    "license": "MIT",
+    "dependencies": {
+        "async": "^0.9.0",
+        "commander": "^2.2.0",
+        "mosca": "^0.21.5"
+    },
+    "devDependencies": {
+        "bunyan": "^0.23.1",
+        "chai": "^1.9.1",
+        "mocha": "^1.20.1",
+        "mqtt": "^0.3.9",
+        "tmp": "0.0.23"
+    }
+}
