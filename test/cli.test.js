@@ -174,7 +174,7 @@ describe("mush.cli", function () {
         args.push("addapp");
         args.push("myapp");
         args.push("mykey");
-        args.push("--auth");
+        args.push("--creds");
 
         tmp.file(function (err, path) {
             if (err) {
@@ -197,7 +197,7 @@ describe("mush.cli", function () {
         args.push("addapp");
         args.push("myapp");
         args.push("mykey");
-        args.push("--auth");
+        args.push("--creds");
 
         tmp.file(function (err, path) {
             if (err) {
@@ -221,8 +221,8 @@ describe("mush.cli", function () {
     });
 
     it("should support authorizing an authorized client", function (done) {
-        args.push("--auth");
-        args.push("test/auth.json");
+        args.push("--creds");
+        args.push("test/creds.json");
         async.waterfall([
             function (cb) {
                 mush.cli(args, cb);
@@ -251,8 +251,8 @@ describe("mush.cli", function () {
     });
 
     it("should support negating an unauthorized client", function (done) {
-        args.push("--auth");
-        args.push("test/auth.json");
+        args.push("--creds");
+        args.push("test/creds.json");
         async.waterfall([
             function (cb) {
                 mush.cli(args, cb);
@@ -287,7 +287,7 @@ describe("mush.cli", function () {
         args.push("myapp");
         args.push("mykey");
         args.push("mysecret");
-        args.push("--auth");
+        args.push("--creds");
 
         var cloned = null;
 
@@ -304,7 +304,7 @@ describe("mush.cli", function () {
                 mush.cli(args, cb);
             },
             function (cb) {
-                mush.cli(["node", "mush", "--auth", cloned[cloned.length - 1]], cb);
+                mush.cli(["node", "mush", "--creds", cloned[cloned.length - 1]], cb);
             },
             function (server, cb) {
                 servers.unshift(server);
@@ -335,11 +335,11 @@ describe("mush.cli", function () {
         });
     });
 
-    it("should save the auth.json as a formatted JSON when adding", function (done) {
+    it("should save the creds.json as a formatted JSON when adding", function (done) {
         args.push("addapp");
         args.push("myapp");
         args.push("mykey");
-        args.push("--auth");
+        args.push("--creds");
 
         tmp.file(function (err, path) {
             if (err) {
@@ -356,11 +356,11 @@ describe("mush.cli", function () {
         });
     });
 
-    it("should save the auth.json as a formatted JSON when removing", function (done) {
+    it("should save the creds.json as a formatted JSON when removing", function (done) {
         args.push("addapp");
         args.push("myapp");
         args.push("mykey");
-        args.push("--auth");
+        args.push("--creds");
 
         tmp.file(function (err, path) {
             if (err) {
