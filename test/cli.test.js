@@ -5,18 +5,18 @@ var mqtt = require("mqtt");
 var os = require("os");
 var mosca = require('mosca');
 
-var mush = require('../');
+var mostel = require('../');
 
 var SECURE_KEY = __dirname + '/secure/tls-key.pem';
 var SECURE_CERT = __dirname + '/secure/tls-cert.pem';
 
-describe("mush.cli", function () {
+describe("mostel.cli", function () {
 
     var servers = null,
         args = null;
 
     beforeEach(function (done) {
-        args = ["node", "mush"];
+        args = ["node", "mostel"];
         servers = [new mosca.Server({
             port: 3833
         }, done)];
@@ -33,7 +33,7 @@ describe("mush.cli", function () {
     });
 
     var startServer = function (done, callback) {
-        return mush.cli(args, function (err, server) {
+        return mostel.cli(args, function (err, server) {
             if (server) {
                 servers.unshift(server);
                 callback(server);
@@ -43,7 +43,7 @@ describe("mush.cli", function () {
     };
 
     it("must be a function", function () {
-        t.typeOf(mush.cli, "function");
+        t.typeOf(mostel.cli, "function");
     });
 
     it("should start a mosca.Server", function (done) {
@@ -183,7 +183,7 @@ describe("mush.cli", function () {
             }
 
             args.push(path);
-            mush.cli(args, function () {
+            mostel.cli(args, function () {
                 var content = JSON.parse(fs.readFileSync(path));
                 t.property(content, "idx");
                 t.property(content, "apps");
@@ -210,8 +210,8 @@ describe("mush.cli", function () {
             cloned[2] = "rmapp";
             cloned.splice(3, 1);
 
-            mush.cli(args, function () {
-                mush.cli(cloned, function () {
+            mostel.cli(args, function () {
+                mostel.cli(cloned, function () {
                     var content = JSON.parse(fs.readFileSync(path));
                     t.notDeepProperty(content, "apps.mykey");
                     done();
@@ -225,7 +225,7 @@ describe("mush.cli", function () {
         args.push("test/creds.json");
         async.waterfall([
             function (cb) {
-                mush.cli(args, cb);
+                mostel.cli(args, cb);
             },
             function (server, cb) {
                 servers.unshift(server);
@@ -255,7 +255,7 @@ describe("mush.cli", function () {
         args.push("test/creds.json");
         async.waterfall([
             function (cb) {
-                mush.cli(args, cb);
+                mostel.cli(args, cb);
             },
             function (server, cb) {
                 servers.unshift(server);
@@ -301,16 +301,16 @@ describe("mush.cli", function () {
                 cloned[2] = "rmapp";
                 cloned.splice(3, 1);
 
-                mush.cli(args, cb);
+                mostel.cli(args, cb);
             },
             function (cb) {
-                mush.cli(["node", "mush", "--creds", cloned[cloned.length - 1]], cb);
+                mostel.cli(["node", "mostel", "--creds", cloned[cloned.length - 1]], cb);
             },
             function (server, cb) {
                 servers.unshift(server);
 
                 setTimeout(function () {
-                    mush.cli(cloned, cb);
+                    mostel.cli(cloned, cb);
                 }, 300);
             },
             function (cb) {
@@ -348,7 +348,7 @@ describe("mush.cli", function () {
             }
 
             args.push(path);
-            mush.cli(args, function () {
+            mostel.cli(args, function () {
                 var content = fs.readFileSync(path);
                 t.equal(JSON.stringify(JSON.parse(content), null, 2), content.toString('utf8'));
                 done();
@@ -373,8 +373,8 @@ describe("mush.cli", function () {
             cloned[2] = "rmapp";
             cloned[3] = "anotherkey";
 
-            mush.cli(args, function () {
-                mush.cli(cloned, function () {
+            mostel.cli(args, function () {
+                mostel.cli(cloned, function () {
                     var content = fs.readFileSync(path);
                     t.equal(JSON.stringify(JSON.parse(content), null, 2), content.toString('utf8'));
                     done();

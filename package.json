@@ -1,18 +1,18 @@
 {
-  "name": "mush",
+  "name": "mostel",
   "version": "0.0.4",
   "description": "Musher server based on node.js and mqtt.",
   "main": "index.js",
   "bin": {
-    "mush": "./bin/mush"
+    "mostel": "./bin/mostel"
   },
   "scripts": {
     "test": "mocha --recursive --bail --reporter spec test",
-    "start": "./bin/mush -i | bunyan"
+    "start": "./bin/mostel -i | bunyan"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@bitbucket.org/taoyuan/mush.git"
+    "url": "ssh://git@bitbucket.org/taoyuan/mostel.git"
   },
   "author": "Tao Yuan",
   "license": "MIT",

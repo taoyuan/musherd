@@ -41,5 +41,5 @@ global.globalLogger = bunyan.createLogger({
 //var sinonChai = require("sinon-chai");
 //chai.use(sinonChai);
 
-//global.mush = require("../");
-//global.mush.cli = require("../lib/cli");
+//global.mostel = require("../");
+//global.mostel.cli = require("../lib/cli");
