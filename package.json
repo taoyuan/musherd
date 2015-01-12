@@ -1,32 +1,32 @@
 {
-  "name": "mostel",
-  "version": "0.0.5",
-  "description": "Musher server based on node.js and mqtt.",
+  "name": "musherd",
+  "version": "0.0.6",
+  "description": "Musher daemon based on node.js and mosca/mqtt.",
   "main": "index.js",
   "bin": {
-    "mostel": "./bin/mostel"
+    "musherd": "./bin/musherd"
   },
   "scripts": {
     "test": "mocha --recursive --bail --reporter spec test",
-    "start": "./bin/mostel -i | bunyan"
+    "start": "./bin/musherd -i | bunyan"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@bitbucket.org/taoyuan/mostel.git"
+    "url": "ssh://git@bitbucket.org/taoyuan/musherd.git"
   },
   "author": "Tao Yuan",
   "license": "MIT",
   "dependencies": {
     "async": "^0.9.0",
-    "commander": "^2.2.0",
+    "commander": "^2.6.0",
     "mkdirp": "^0.5.0",
-    "mosca": "^0.26.1"
+    "mosca": "^0.26.2"
   },
   "devDependencies": {
-    "bunyan": "^0.23.1",
-    "chai": "^1.9.1",
-    "mocha": "^1.20.1",
-    "mqtt": "^0.3.9",
-    "tmp": "0.0.23"
+    "bunyan": "^1.2.3",
+    "chai": "^1.10.0",
+    "mocha": "^2.1.0",
+    "mqtt": "^0.3.13",
+    "tmp": "0.0.24"
   }
 }

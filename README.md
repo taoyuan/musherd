@@ -1,4 +1,4 @@
-mostel
-===
+musherd
+=======
 
-Musher server based on node.js and mqtt.
+Musher daemon based on node.js and mqtt.

@@ -5,18 +5,18 @@ var mqtt = require("mqtt");
 var os = require("os");
 var mosca = require('mosca');
 
-var mostel = require('../');
+var musherd = require('../');
 
 var SECURE_KEY = __dirname + '/secure/tls-key.pem';
 var SECURE_CERT = __dirname + '/secure/tls-cert.pem';
 
-describe("mostel.cli", function () {
+describe("musherd.cli", function () {
 
     var servers = null,
         args = null;
 
     beforeEach(function (done) {
-        args = ["node", "mostel"];
+        args = ["node", "musherd"];
         servers = [new mosca.Server({
             port: 3833
         }, done)];
@@ -33,7 +33,7 @@ describe("mostel.cli", function () {
     });
 
     var startServer = function (done, callback) {
-        return mostel.cli(args, function (err, server) {
+        return musherd.cli(args, function (err, server) {
             if (server) {
                 servers.unshift(server);
                 callback(server);
@@ -43,7 +43,7 @@ describe("mostel.cli", function () {
     };
 
     it("must be a function", function () {
-        t.typeOf(mostel.cli, "function");
+        t.typeOf(musherd.cli, "function");
     });
 
     it("should start a mosca.Server", function (done) {
@@ -183,7 +183,7 @@ describe("mostel.cli", function () {
             }
 
             args.push(path);
-            mostel.cli(args, function () {
+            musherd.cli(args, function () {
                 var content = JSON.parse(fs.readFileSync(path));
                 t.property(content, "idx");
                 t.property(content, "apps");
@@ -210,8 +210,8 @@ describe("mostel.cli", function () {
             cloned[2] = "rmapp";
             cloned.splice(3, 1);
 
-            mostel.cli(args, function () {
-                mostel.cli(cloned, function () {
+            musherd.cli(args, function () {
+                musherd.cli(cloned, function () {
                     var content = JSON.parse(fs.readFileSync(path));
                     t.notDeepProperty(content, "apps.mykey");
                     done();
@@ -225,7 +225,7 @@ describe("mostel.cli", function () {
         args.push("test/creds.json");
         async.waterfall([
             function (cb) {
-                mostel.cli(args, cb);
+                musherd.cli(args, cb);
             },
             function (server, cb) {
                 servers.unshift(server);
@@ -255,7 +255,7 @@ describe("mostel.cli", function () {
         args.push("test/creds.json");
         async.waterfall([
             function (cb) {
-                mostel.cli(args, cb);
+                musherd.cli(args, cb);
             },
             function (server, cb) {
                 servers.unshift(server);
@@ -295,22 +295,22 @@ describe("mostel.cli", function () {
             function (cb) {
                 tmp.file(cb);
             },
-            function (path, fd, cb) {
+            function (path, fd, removeCallback, cb) {
                 args.push(path);
                 cloned = [].concat(args);
                 cloned[2] = "rmapp";
                 cloned.splice(3, 1);
 
-                mostel.cli(args, cb);
+                musherd.cli(args, cb);
             },
             function (cb) {
-                mostel.cli(["node", "mostel", "--creds", cloned[cloned.length - 1]], cb);
+                musherd.cli(["node", "musherd", "--creds", cloned[cloned.length - 1]], cb);
             },
             function (server, cb) {
                 servers.unshift(server);
 
                 setTimeout(function () {
-                    mostel.cli(cloned, cb);
+                    musherd.cli(cloned, cb);
                 }, 300);
             },
             function (cb) {
@@ -348,7 +348,7 @@ describe("mostel.cli", function () {
             }
 
             args.push(path);
-            mostel.cli(args, function () {
+            musherd.cli(args, function () {
                 var content = fs.readFileSync(path);
                 t.equal(JSON.stringify(JSON.parse(content), null, 2), content.toString('utf8'));
                 done();
@@ -373,8 +373,8 @@ describe("mostel.cli", function () {
             cloned[2] = "rmapp";
             cloned[3] = "anotherkey";
 
-            mostel.cli(args, function () {
-                mostel.cli(cloned, function () {
+            musherd.cli(args, function () {
+                musherd.cli(cloned, function () {
                     var content = fs.readFileSync(path);
                     t.equal(JSON.stringify(JSON.parse(content), null, 2), content.toString('utf8'));
                     done();
