@@ -17,19 +17,18 @@ describe("musherd.cli", function () {
 
     beforeEach(function (done) {
         args = ["node", "musherd"];
-        servers = [new mosca.Server({
-            port: 3833
-        }, done)];
+        servers = [mosca.Server({port: 3833}, done)];
     });
 
     afterEach(function (done) {
-        async.parallel(servers.map(function (s) {
-            return function (cb) {
-                s.close(cb);
-            };
-        }), function () {
-            done();
-        });
+        setTimeout(function () { // just avoid `Error: This ascoltatore is closed`
+            async.parallel(servers.map(function (s) {
+                return function (cb) {
+                    if (s.closed) return cb();
+                    s.close(cb);
+                };
+            }), done);
+        }, 1);
     });
 
     var startServer = function (done, callback) {
@@ -92,48 +91,48 @@ describe("musherd.cli", function () {
     });
 
 
-    it("should support a port flag", function(done) {
+    it("should support a port flag", function (done) {
         args.push("-p");
         args.push("2883");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.port, 2883);
         });
     });
 
-    it("should support a port flag (bis)", function(done) {
+    it("should support a port flag (bis)", function (done) {
         args.push("--port");
         args.push("2883");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.port, 2883);
         });
     });
 
-    it("should support a parent port", function(done) {
+    it("should support a parent port", function (done) {
         args.push("--parent-port");
         args.push("3833");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.backend.type, "mqtt");
             t.equal(server.opts.backend.port, 3833);
         });
     });
 
-    it("should support a parent host", function(done) {
+    it("should support a parent host", function (done) {
         args.push("--parent-host");
         args.push("localhost");
         args.push("--parent-port");
         args.push("3833");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.backend.type, "mqtt");
             t.equal(server.opts.backend.host, "localhost");
         });
     });
 
-    it("should support a parent prefix", function(done) {
+    it("should support a parent prefix", function (done) {
         args.push("--parent-port");
         args.push("3833");
         args.push("--parent-prefix");
         args.push("/ahaha");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.backend.prefix, "/ahaha");
         });
     });
@@ -230,7 +229,7 @@ describe("musherd.cli", function () {
             function (server, cb) {
                 servers.unshift(server);
 
-                var options = { username: "test_key", password: "kyte7mewy230faey2use" };
+                var options = {username: "test_key", password: "kyte7mewy230faey2use"};
                 var client = mqtt.createClient(1883, "localhost", options);
                 client.on("error", cb);
                 client.on("connect", function () {
@@ -259,7 +258,7 @@ describe("musherd.cli", function () {
             },
             function (server, cb) {
                 servers.unshift(server);
-                var options = { username: "bad", password: "bad" };
+                var options = {username: "bad", password: "bad"};
                 var client = mqtt.createClient(1883, "localhost", options);
                 client.on("error", cb);
                 client.on("connect", function () {
@@ -318,7 +317,7 @@ describe("musherd.cli", function () {
                 setTimeout(cb, 50);
             },
             function (cb) {
-                var options = { username: "mykey", password: "mysecret" };
+                var options = {username: "mykey", password: "mysecret"};
                 var client = mqtt.createClient(1883, "localhost", options);
                 client.once("error", cb);
                 client.once("connect", function () {
@@ -383,7 +382,7 @@ describe("musherd.cli", function () {
         });
     });
 
-    it("should create a leveldb with the --db flag", function(done) {
+    it("should create a leveldb with the --db flag", function (done) {
 
         tmp.dir(function (err, path, fd) {
             if (err) {
@@ -394,142 +393,142 @@ describe("musherd.cli", function () {
             args.push("--db");
             args.push(path);
 
-            startServer(done, function(server) {
+            startServer(done, function (server) {
                 t.instanceOf(server.persistence, mosca.persistence.LevelUp);
                 t.equal(server.persistence.options.path, path);
             });
         });
     });
 
-    describe("with --key and --cert", function() {
+    describe("with --key and --cert", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
             args.push("--key");
             args.push(SECURE_KEY);
             args.push("--cert");
             args.push(SECURE_CERT);
         });
 
-        it("should pass key and cert to the server", function(done) {
-            startServer(done, function(server) {
+        it("should pass key and cert to the server", function (done) {
+            startServer(done, function (server) {
                 t.equal(server.opts.secure.keyPath, SECURE_KEY);
                 t.equal(server.opts.secure.certPath, SECURE_CERT);
             });
         });
 
-        it("should support the --secure-port flag", function(done) {
+        it("should support the --secure-port flag", function (done) {
             var port = nextPort();
             args.push("--secure-port");
             args.push(port);
-            startServer(done, function(server) {
+            startServer(done, function (server) {
                 t.equal(server.opts.secure.port, port);
             });
         });
 
-        it("should set the secure port by default at 8883", function(done) {
-            startServer(done, function(server) {
+        it("should set the secure port by default at 8883", function (done) {
+            startServer(done, function (server) {
                 t.equal(server.opts.secure.port, 8883);
             });
         });
 
-        it("should pass the --non-secure flag to the server", function(done) {
+        it("should pass the --non-secure flag to the server", function (done) {
             args.push("--non-secure");
-            startServer(done, function(server) {
+            startServer(done, function (server) {
                 t.equal(server.opts.allowNonSecure, true);
             });
         });
 
-        it("should allow to set the https port", function(done) {
+        it("should allow to set the https port", function (done) {
 
             args.push("--https-port");
             args.push("3000");
-            startServer(done, function(server) {
+            startServer(done, function (server) {
                 t.equal(server.opts.https.port, 3000);
             });
         });
 
-        it("should serve a HTTPS static directory", function(done) {
+        it("should serve a HTTPS static directory", function (done) {
             args.push("--https-port");
             args.push("3000");
             args.push("--https-static");
             args.push("/path/to/nowhere");
-            startServer(done, function(server) {
+            startServer(done, function (server) {
                 t.equal(server.opts.https.static, "/path/to/nowhere");
             });
         });
 
-        it("should serve a HTTPS browserify bundle", function(done) {
+        it("should serve a HTTPS browserify bundle", function (done) {
             args.push("--https-port");
             args.push("3000");
             args.push("--https-bundle");
-            startServer(done, function(server) {
+            startServer(done, function (server) {
                 t.equal(server.opts.https.bundle, true);
             });
         });
 
     });
 
-    it("should allow to set the http port", function(done) {
+    it("should allow to set the http port", function (done) {
         args.push("--http-port");
         args.push("3000");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.http.port, 3000);
         });
     });
 
-    it("should allow to limit the server only to http", function(done) {
+    it("should allow to limit the server only to http", function (done) {
         args.push("--http-port");
         args.push("3000");
         args.push("--only-http");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.http.port, 3000);
         });
     });
 
-    it("should serve a HTTP static directory", function(done) {
+    it("should serve a HTTP static directory", function (done) {
         args.push("--http-port");
         args.push("3000");
         args.push("--http-static");
         args.push("/path/to/nowhere");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.http.static, "/path/to/nowhere");
         });
     });
 
-    it("should serve a HTTP browserify bundle", function(done) {
+    it("should serve a HTTP browserify bundle", function (done) {
         args.push("--http-port");
         args.push("3000");
         args.push("--http-bundle");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.http.bundle, true);
         });
     });
 
-    it("should have stats enabled by default", function(done) {
-        var s = startServer(done, function(server) {
+    it("should have stats enabled by default", function (done) {
+        var s = startServer(done, function (server) {
             t.equal(server.opts.stats, true);
         });
     });
 
-    it("should allow to disable stats", function(done) {
+    it("should allow to disable stats", function (done) {
         args.push("--disable-stats");
-        var s = startServer(done, function(server) {
+        var s = startServer(done, function (server) {
             t.equal(server.opts.stats, false);
         });
     });
 
-    it("should allow to specify a broker id", function(done) {
+    it("should allow to specify a broker id", function (done) {
         args.push("--broker-id");
         args.push("44cats");
-        var s = startServer(done, function(server) {
+        var s = startServer(done, function (server) {
             t.equal(server.id, "44cats");
         });
     });
 
-    it("should specify an interface to bind to", function(done) {
+    it("should specify an interface to bind to", function (done) {
         args.push("--host");
         args.push("127.0.0.1");
-        startServer(done, function(server) {
+        startServer(done, function (server) {
             t.equal(server.opts.host, "127.0.0.1");
         });
     });
