@@ -1,6 +1,6 @@
 {
   "name": "musherd",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Musher daemon based on node.js and mosca/mqtt.",
   "main": "index.js",
   "bin": {
